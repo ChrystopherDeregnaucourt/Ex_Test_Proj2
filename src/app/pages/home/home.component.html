@@ -1,3 +1,64 @@
-<h2>Olympic games app</h2>
-<hr />
-<p>{{ (olympics$ | async)?.length }} data loaded</p>
+<section class="home" *ngIf="homeView$ | async as view">
+  <ng-container [ngSwitch]="view.status">
+    <p *ngSwitchCase="'loading'" class="state-message" aria-live="polite">
+      Loading Olympic data...
+    </p>
+
+    <p
+      *ngSwitchCase="'error'"
+      class="state-message state-message--error"
+      role="alert"
+    >
+      An error occurred while loading the Olympic data. Please try again later.
+    </p>
+
+    <div *ngSwitchCase="'ready'" class="dashboard" aria-live="polite">
+      <header class="dashboard__header">
+        <h1 class="dashboard__title">Medals per Country</h1>
+        <div class="dashboard__stats" aria-label="Global statistics">
+          <article class="stat-card" aria-label="Number of Olympic games shown">
+            <span class="stat-card__label">Number of JOs</span>
+            <span class="stat-card__value">{{ view.totalGames }}</span>
+          </article>
+          <article class="stat-card" aria-label="Number of represented countries">
+            <span class="stat-card__label">Number of countries</span>
+            <span class="stat-card__value">{{ view.totalCountries }}</span>
+          </article>
+        </div>
+      </header>
+
+      <div class="dashboard__chart">
+        <canvas
+          baseChart
+          aria-label="Pie chart showing the number of medals won per country"
+          [type]="'pie'"
+          [data]="view.chartData"
+          [options]="pieChartOptions"
+          (chartClick)="onChartClick($event)"
+        ></canvas>
+      </div>
+
+      <p class="dashboard__hint">
+        Click on a country slice or use the buttons below to explore its Olympic
+        history.
+      </p>
+
+      <div class="dashboard__actions" role="navigation" aria-label="Country navigation">
+        <button
+          type="button"
+          class="country-pill"
+          *ngFor="let country of view.countries"
+          (click)="goToCountry(country.id)"
+        >
+          {{ country.name }}
+        </button>
+      </div>
+
+      <ul class="sr-only" aria-label="Medals per country list">
+        <li *ngFor="let country of view.countries">
+          {{ country.name }}: {{ country.totalMedals }} medals
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+</section>
