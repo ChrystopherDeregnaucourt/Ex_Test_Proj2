@@ -1,35 +1,40 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import { OlympicService } from './core/services/olympic.service';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  // Simulation de la méthode loadInitialData pour vérifier son appel automatique.
+  const loadInitialDataSpy = jasmine
+    .createSpy('loadInitialData')
+    .and.returnValue(of(null));
+
   beforeEach(async () => {
+    loadInitialDataSpy.calls.reset();
+
     await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
+      imports: [RouterTestingModule],
+      declarations: [AppComponent],
+      providers: [
+        {
+          provide: OlympicService,
+          useValue: {
+            loadInitialData: loadInitialDataSpy,
+          },
+        },
       ],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
+  it('should create the app and trigger data loading', () => {
+    // On crée le composant racine.
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'olympic-games-starter'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('olympic-games-starter');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('olympic-games-starter app is running!');
+
+    // Vérification : le composant existe et la récupération des données est lancée.
+    expect(app).toBeTruthy();
+    expect(loadInitialDataSpy).toHaveBeenCalled();
   });
 });

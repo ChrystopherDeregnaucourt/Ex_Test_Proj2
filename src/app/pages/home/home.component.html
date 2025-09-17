@@ -1,3 +1,80 @@
-<h2>Olympic games app</h2>
-<hr />
-<p>{{ (olympics$ | async)?.length }} data loaded</p>
+<!--
+  Vue d'ensemble du tableau de bord : on récupère le modèle exposé par le
+  composant et on bascule l'affichage en fonction de l'état (chargement, erreur,
+  données prêtes).
+-->
+<section class="home" *ngIf="homeView$ | async as view">
+  <ng-container [ngSwitch]="view.status">
+    <!-- Message d'attente pendant le chargement initial des données. -->
+    <p *ngSwitchCase="'loading'" class="state-message" aria-live="polite">
+      Loading Olympic data...
+    </p>
+
+    <!-- Message d'erreur lorsque l'appel HTTP n'a pas abouti. -->
+    <p
+      *ngSwitchCase="'error'"
+      class="state-message state-message--error"
+      role="alert"
+    >
+      An error occurred while loading the Olympic data. Please try again later.
+    </p>
+
+    <!--
+      Contenu principal du dashboard : statistiques globales, graphique
+      interactif et navigation rapide par pays.
+    -->
+    <div *ngSwitchCase="'ready'" class="dashboard" aria-live="polite">
+      <header class="dashboard__header">
+        <h1 class="dashboard__title">Medals per Country</h1>
+        <!-- Cartes résumant le nombre total de Jeux et de pays disponibles. -->
+        <div class="dashboard__stats" aria-label="Global statistics">
+          <article class="stat-card" aria-label="Number of Olympic games shown">
+            <span class="stat-card__label">Number of JOs</span>
+            <span class="stat-card__value">{{ view.totalGames }}</span>
+          </article>
+          <article class="stat-card" aria-label="Number of represented countries">
+            <span class="stat-card__label">Number of countries</span>
+            <span class="stat-card__value">{{ view.totalCountries }}</span>
+          </article>
+        </div>
+      </header>
+
+      <!-- Graphique circulaire affichant la répartition des médailles. -->
+      <div class="dashboard__chart">
+        <canvas
+          baseChart
+          aria-label="Pie chart showing the number of medals won per country"
+          [type]="'pie'"
+          [data]="view.chartData"
+          [options]="pieChartOptions"
+          (chartClick)="onChartClick($event)"
+        ></canvas>
+      </div>
+
+      <!-- Aide à l'utilisation pour favoriser l'interaction. -->
+      <p class="dashboard__hint">
+        Click on a country slice or use the buttons below to explore its Olympic
+        history.
+      </p>
+
+      <!-- Liste de boutons pour accéder rapidement à chaque page pays. -->
+      <div class="dashboard__actions" role="navigation" aria-label="Country navigation">
+        <button
+          type="button"
+          class="country-pill"
+          *ngFor="let country of view.countries"
+          (click)="goToCountry(country.id)"
+        >
+          {{ country.name }}
+        </button>
+      </div>
+
+      <!-- Version textuelle des données pour les technologies d'assistance. -->
+      <ul class="sr-only" aria-label="Medals per country list">
+        <li *ngFor="let country of view.countries">
+          {{ country.name }}: {{ country.totalMedals }} medals
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+</section>
