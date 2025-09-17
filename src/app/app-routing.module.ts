@@ -10,11 +10,12 @@ const routes: Routes = [
     component: HomeComponent,
   },
   {
+    // Route paramétrée pour accéder aux détails d'un pays en fonction de son identifiant.
     path: 'country/:id',
     component: CountryDetailsComponent,
   },
   {
-    path: '**', // wildcard
+    path: '**', // route wildcard pour les URL inconnues
     component: NotFoundComponent,
   },
 ];

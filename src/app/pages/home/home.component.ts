@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 
+// On enregistre les éléments nécessaires à l'affichage d'un graphique circulaire.
 Chart.register(ArcElement, Tooltip, Legend);
 
 interface CountryMedal {
@@ -36,6 +37,9 @@ interface HomeViewModel {
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
+  /**
+   * Palette de couleurs utilisée pour différencier les pays dans le graphique.
+   */
   private readonly chartColors = [
     '#01B0B9',
     '#7DDDD3',
@@ -45,8 +49,16 @@ export class HomeComponent {
     '#60A5FA',
   ];
 
+  /**
+   * Copie locale des segments du camembert pour retrouver rapidement le pays
+   * correspondant lors d'un clic sur une portion du graphique.
+   */
   private countrySegments: CountryMedal[] = [];
 
+  /**
+   * Jeu de données vide utilisé pendant le chargement ou en cas d'erreur pour
+   * conserver la configuration attendue par `baseChart`.
+   */
   private readonly emptyPieChartData: ChartData<'pie', number[], string> = {
     labels: [],
     datasets: [
@@ -59,6 +71,10 @@ export class HomeComponent {
     ],
   };
 
+  /**
+   * Options Chart.js appliquées au graphique circulaire pour respecter la
+   * maquette (légende à droite, couleurs d'accessibilité, etc.).
+   */
   public readonly pieChartOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -80,6 +96,10 @@ export class HomeComponent {
     },
   };
 
+  /**
+   * Vue dérivée des données exposées par le service : selon l'état reçu, on
+   * renvoie un modèle adapté au template (chargement, erreur ou données prêtes).
+   */
   public readonly homeView$: Observable<HomeViewModel> = this.olympicService
     .getOlympics()
     .pipe(
@@ -104,6 +124,7 @@ export class HomeComponent {
           };
         }
 
+        // Transformation des données brutes en une liste simplifiée pour la vue.
         const countries: CountryMedal[] = olympics.map((olympic) => ({
           id: olympic.id,
           name: olympic.country,
@@ -113,6 +134,7 @@ export class HomeComponent {
           ),
         }));
 
+        // On collecte l'ensemble des années représentées pour calculer le nombre total de Jeux.
         const years = new Set<number>();
         olympics.forEach((olympic) =>
           olympic.participations.forEach((participation) =>
@@ -120,6 +142,7 @@ export class HomeComponent {
           )
         );
 
+        // Construction du jeu de données attendu par Chart.js pour le camembert.
         const chartData: ChartData<'pie', number[], string> = {
           labels: countries.map((country) => country.name),
           datasets: [
@@ -143,6 +166,7 @@ export class HomeComponent {
           countries,
         };
       }),
+      // On met à jour la correspondance index -> pays lorsque les données sont prêtes.
       tap((view) => {
         if (view.status === 'ready') {
           this.countrySegments = view.countries;
@@ -157,6 +181,10 @@ export class HomeComponent {
     private readonly router: Router
   ) {}
 
+  /**
+   * Gestionnaire déclenché par `baseChart` lorsque l'utilisateur clique sur
+   * une portion du camembert.
+   */
   public onChartClick({
     active,
   }: {
@@ -175,6 +203,10 @@ export class HomeComponent {
     }
   }
 
+  /**
+   * Garde de type permettant de s'assurer que le tableau d'éléments actifs
+   * expose bien les propriétés `index` attendues par Chart.js.
+   */
   private isActiveElementArray(
     elements?: Array<ActiveElement | object>
   ): elements is ActiveElement[] {
@@ -189,6 +221,9 @@ export class HomeComponent {
     );
   }
 
+  /**
+   * Redirige l'utilisateur vers la page de détails du pays sélectionné.
+   */
   public goToCountry(countryId: number): void {
     this.router.navigate(['/country', countryId]);
   }

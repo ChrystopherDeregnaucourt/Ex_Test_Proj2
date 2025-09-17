@@ -1,9 +1,15 @@
+<!--
+  Page de détails d'un pays : on adapte l'affichage selon l'état du ViewModel
+  (chargement, erreur, pays introuvable ou données disponibles).
+-->
 <section class="details" *ngIf="viewModel$ | async as view">
   <ng-container [ngSwitch]="view.status">
+    <!-- État d'attente pendant la récupération des informations. -->
     <p class="state-message" *ngSwitchCase="'loading'" aria-live="polite">
       Loading country data...
     </p>
 
+    <!-- Message d'erreur global lorsque l'appel de service a échoué. -->
     <p
       class="state-message state-message--error"
       *ngSwitchCase="'error'"
@@ -13,6 +19,7 @@
       later.
     </p>
 
+    <!-- Indication utilisateur lorsque l'identifiant ne correspond à aucun pays. -->
     <div class="state-message" *ngSwitchCase="'not-found'">
       <p class="state-message__title">Country not found</p>
       <p class="state-message__body">
@@ -21,7 +28,12 @@
       <a class="link" routerLink="/">Back to dashboard</a>
     </div>
 
+    <!--
+      Carte principale affichant les métriques du pays et le graphique des
+      médailles lorsque les données sont disponibles.
+    -->
     <div *ngSwitchCase="'ready'" class="details__card" aria-live="polite">
+      <!-- Bouton de retour vers le dashboard principal. -->
       <div class="details__top-bar">
         <button type="button" class="back-button" routerLink="/">
           ← Back
@@ -30,6 +42,10 @@
 
       <header class="details__header">
         <h1 class="details__title">{{ view.countryName }}</h1>
+        <!--
+          Cartes affichant les indicateurs clés calculés dans le composant :
+          participations, total de médailles et nombre d'athlètes.
+        -->
         <div class="details__metrics" aria-label="Country statistics">
           <article class="metric">
             <span class="metric__label">Number of entries</span>
@@ -46,6 +62,7 @@
         </div>
       </header>
 
+      <!-- Graphique linéaire représentant l'évolution des médailles dans le temps. -->
       <div class="details__chart">
         <canvas
           baseChart

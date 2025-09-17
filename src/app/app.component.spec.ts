@@ -5,6 +5,7 @@ import { OlympicService } from './core/services/olympic.service';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  // Simulation de la méthode loadInitialData pour vérifier son appel automatique.
   const loadInitialDataSpy = jasmine
     .createSpy('loadInitialData')
     .and.returnValue(of(null));
@@ -27,10 +28,12 @@ describe('AppComponent', () => {
   });
 
   it('should create the app and trigger data loading', () => {
+    // On crée le composant racine.
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     fixture.detectChanges();
 
+    // Vérification : le composant existe et la récupération des données est lancée.
     expect(app).toBeTruthy();
     expect(loadInitialDataSpy).toHaveBeenCalled();
   });

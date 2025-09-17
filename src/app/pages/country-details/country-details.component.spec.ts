@@ -12,18 +12,21 @@ describe('CountryDetailsComponent', () => {
   let fixture: ComponentFixture<CountryDetailsComponent>;
 
   beforeEach(async () => {
+    // Initialisation du module de test avec le routeur simulé et le module de graphiques.
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule, NgChartsModule],
       declarations: [CountryDetailsComponent],
       providers: [
         {
           provide: OlympicService,
+          // Observable `undefined` : le composant doit gérer l'état de chargement.
           useValue: {
             getOlympics: () => of(undefined),
           },
         },
         {
           provide: ActivatedRoute,
+          // Fournit un paramètre de route fictif pour alimenter le ViewModel.
           useValue: {
             paramMap: of(convertToParamMap({ id: '1' })),
           },
@@ -31,12 +34,14 @@ describe('CountryDetailsComponent', () => {
       ],
     }).compileComponents();
 
+    // Création du composant et lancement de la détection de changements.
     fixture = TestBed.createComponent(CountryDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
+    // S'assure que la configuration minimale permet d'instancier le composant.
     expect(component).toBeTruthy();
   });
 });

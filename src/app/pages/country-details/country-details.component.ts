@@ -16,6 +16,7 @@ import { map } from 'rxjs/operators';
 import { Participation } from 'src/app/core/models/Participation';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 
+// Enregistrement des composants nécessaires pour construire un graphique linéaire Chart.js.
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 interface CountryDetailsViewModel {
@@ -35,11 +36,19 @@ interface CountryDetailsViewModel {
   styleUrls: ['./country-details.component.scss'],
 })
 export class CountryDetailsComponent {
+  /**
+   * Configuration de base renvoyée lorsque le graphique ne doit rien afficher
+   * (pendant le chargement, une erreur ou l'absence de pays).
+   */
   private readonly emptyLineChartData: ChartData<'line'> = {
     labels: [],
     datasets: [],
   };
 
+  /**
+   * Options Chart.js du graphique linéaire : titres d'axes, couleurs et
+   * interactions sont alignés sur les spécifications design.
+   */
   public readonly lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -93,8 +102,14 @@ export class CountryDetailsComponent {
     },
   };
 
+  /**
+   * Vue calculée en combinant l'identifiant fourni dans l'URL et les données du
+   * service. Chaque cas fonctionnel (chargement, erreur, pays introuvable,
+   * affichage) est matérialisé par un statut distinct pour simplifier le template.
+   */
   public readonly viewModel$: Observable<CountryDetailsViewModel> = combineLatest([
     this.route.paramMap.pipe(
+      // On extrait et on valide l'identifiant fourni dans l'URL.
       map((params) => {
         const rawId = params.get('id');
         if (rawId === null) {
@@ -105,6 +120,7 @@ export class CountryDetailsComponent {
         return Number.isNaN(parsed) ? null : parsed;
       })
     ),
+    // Flux principal des données olympiques récupérées par le service.
     this.olympicService.getOlympics(),
   ]).pipe(
     map(([countryId, olympics]): CountryDetailsViewModel => {
@@ -146,10 +162,13 @@ export class CountryDetailsComponent {
         };
       }
 
+      // Copie triée chronologiquement des participations pour garantir l'ordre d'affichage.
       const participations: Participation[] = [...country.participations].sort(
         (a, b) => a.year - b.year
       );
 
+      // Prépare les séries et labels du graphique linéaire en suivant l'ordre
+      // chronologique des participations.
       const chartData: ChartData<'line'> = {
         labels: participations.map((participation) => participation.year.toString()),
         datasets: [
@@ -167,6 +186,7 @@ export class CountryDetailsComponent {
         ],
       };
 
+      // Agrégats utilisés pour alimenter les cartes de métriques dans la vue.
       const medals = participations.reduce(
         (total, participation) => total + participation.medalsCount,
         0

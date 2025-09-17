@@ -1,9 +1,11 @@
+/* Variables globales définissant la typographie et la colorimétrie par défaut. */
 :root {
   color-scheme: light;
   font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.5;
 }
 
+/* Reset de base pour simplifier les calculs de layout. */
 * {
   box-sizing: border-box;
 }
@@ -19,6 +21,7 @@ a {
   color: inherit;
 }
 
+/* Harmonise la typographie sur l'ensemble des éléments interactifs. */
 button,
 input,
 textarea,
@@ -26,6 +29,7 @@ select {
   font: inherit;
 }
 
+/* Garantit que le premier composant après le routeur est affiché en bloc. */
 router-outlet + * {
   display: block;
 }

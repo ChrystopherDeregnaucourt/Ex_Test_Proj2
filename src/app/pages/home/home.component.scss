@@ -1,3 +1,7 @@
+/*
+  Mise en page générale de la page d'accueil : marges et largeur maximale
+  suivent les indications de la maquette responsive.
+*/
 :host {
   display: block;
   padding: 2.5rem 1.5rem 3rem;
@@ -8,6 +12,7 @@
   margin: 0 auto;
 }
 
+/* Carte principale du dashboard (fond blanc, ombre et grille interne). */
 .dashboard {
   background: #ffffff;
   border-radius: 24px;
@@ -17,6 +22,7 @@
   gap: 2rem;
 }
 
+/* En-tête contenant le titre et les statistiques globales. */
 .dashboard__header {
   display: flex;
   flex-direction: column;
@@ -30,12 +36,14 @@
   margin: 0;
 }
 
+/* Grille responsive pour les cartes de statistiques. */
 .dashboard__stats {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+/* Style des cartes affichant les totaux. */
 .stat-card {
   background: linear-gradient(135deg, rgba(1, 176, 185, 0.1), rgba(96, 165, 250, 0.1));
   border-radius: 18px;
@@ -58,6 +66,7 @@
   color: #0f172a;
 }
 
+/* Conteneur du graphique circulaire. */
 .dashboard__chart {
   position: relative;
   min-height: 320px;
@@ -74,6 +83,7 @@
   font-weight: 500;
 }
 
+/* Boutons de navigation rapide vers les pages pays. */
 .dashboard__actions {
   display: flex;
   flex-wrap: wrap;
@@ -99,6 +109,7 @@
   outline: none;
 }
 
+/* Messages d'état (chargement/erreur) affichés hors de la carte principale. */
 .state-message {
   max-width: 720px;
   margin: 4rem auto 0;
@@ -115,6 +126,7 @@
   color: #991b1b;
 }
 
+/* Classe utilitaire pour fournir une version accessible du tableau des médailles. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -128,6 +140,10 @@
 }
 
 @media (min-width: 768px) {
+  /*
+    Sur écrans moyens et plus, on augmente les marges et on aligne le titre et
+    les statistiques côte à côte.
+  */
   :host {
     padding: 3rem;
   }

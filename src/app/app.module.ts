@@ -10,6 +10,7 @@ import { CountryDetailsComponent } from './pages/country-details/country-details
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, NotFoundComponent, CountryDetailsComponent],
+  // NgChartsModule apporte les composants Angular basés sur Chart.js utilisés sur les deux pages.
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, NgChartsModule],
   providers: [],
   bootstrap: [AppComponent],
