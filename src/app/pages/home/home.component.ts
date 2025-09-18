@@ -1,227 +1,149 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import {
-  ActiveElement,
-  ArcElement,
-  Chart,
-  ChartData,
-  ChartEvent,
-  ChartOptions,
-  Legend,
-  Tooltip,
-} from 'chart.js';
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { filter, map, Observable, of } from 'rxjs';
 import { OlympicService } from 'src/app/core/services/olympic.service';
-
-// On enregistre les éléments nécessaires à l'affichage d'un graphique circulaire.
-Chart.register(ArcElement, Tooltip, Legend);
-
-interface CountryMedal {
-  id: number;
-  name: string;
-  totalMedals: number;
-}
-
-interface HomeViewModel {
-  status: 'loading' | 'error' | 'ready';
-  totalGames: number;
-  totalCountries: number;
-  chartData: ChartData<'pie', number[], string>;
-  countries: CountryMedal[];
-}
+import { Router } from '@angular/router';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {
+  ChartConfiguration,
+  ChartData,
+  ChartType,
+  TooltipItem,
+  Chart,
+} from 'chart.js';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    standalone: false
 })
-export class HomeComponent 
-{
-  /**
-   * Palette de couleurs utilisée pour différencier les pays dans le graphique.
-   */
-  private readonly chartColors = [
-    '#01B0B9',
-    '#7DDDD3',
-    '#F4C095',
-    '#F4978E',
-    '#8E64FF',
-    '#60A5FA',
-  ];
+export class HomeComponent implements OnInit {
+  public olympics$: Observable<any> = of(null);
 
-  /**
-   * Copie locale des segments du camembert pour retrouver rapidement le pays
-   * correspondant lors d'un clic sur une portion du graphique.
-   */
-  private countrySegments: CountryMedal[] = [];
+  public viewModel$: Observable<HomeViewModel> = of({
+    countriesCount: 0,
+    olympicsCount: 0,
+    chartData: { labels: [], datasets: [] },
+  });
 
-  /**
-   * Jeu de données vide utilisé pendant le chargement ou en cas d'erreur pour
-   * conserver la configuration attendue par `baseChart`.
-   */
-  private readonly emptyPieChartData: ChartData<'pie', number[], string> = {
-    labels: [],
-    datasets: [
-      {
-        data: [],
-        backgroundColor: [],
-        borderColor: '#FFFFFF',
-        borderWidth: 2,
-      },
-    ],
-  };
-
-  /**
-   * Options Chart.js appliquées au graphique circulaire pour respecter la
-   * maquette (légende à droite, couleurs d'accessibilité, etc.).
-   */
-  public readonly pieChartOptions: ChartOptions<'pie'> = {
+  public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'right',
-        labels: {
-          boxWidth: 16,
-          boxHeight: 16,
-          color: '#0F172A',
-          usePointStyle: true,
+    legend: {
+      display: false, // Cache la légende classique
+      labels: {
+        usePointStyle: true,
+        color: '#1f2937',
+        padding: 20,
+        font: {
+          family: '"Poppins", "Segoe UI", Arial, sans-serif',
+          size: 13,
+          weight: 500,
         },
       },
+    },
+    datalabels: {
+      color: '#333',
+      font: {
+        weight: 'bold',
+        size: 12,
+      },
+      formatter: (value: number, context: { chart: Chart; dataIndex: number }) => {
+        const label = context.chart.data.labels?.[context.dataIndex] ?? '';
+        return `${label}: ${value}`; // Affiche le label et la valeur
+      },
+      anchor: 'end',
+      align: 'end',
+      offset: 10,
+      backgroundColor: 'rgba(255,255,255,0.8)',
+      borderRadius: 6,
+      padding: 4,
+    },
       tooltip: {
         callbacks: {
-          label: (context) => `${context.label}: ${context.parsed} medals`,
+          label: (context: TooltipItem<'pie'>) => {
+            const label = context.label ?? '';
+            return `${label}: ${context.raw} medals`;
+          },
         },
       },
     },
   };
-
-  /**
-   * Vue dérivée des données exposées par le service : selon l'état reçu, on
-   * renvoie un modèle adapté au template (chargement, erreur ou données prêtes).
-   */
-  public readonly homeView$: Observable<HomeViewModel> = this.olympicService
-    .getOlympics()
-    .pipe(
-      map((olympics): HomeViewModel => {
-        if (olympics === null) {
-          return {
-            status: 'error' as const,
-            totalGames: 0,
-            totalCountries: 0,
-            chartData: this.emptyPieChartData,
-            countries: [],
-          };
-        }
-
-        if (!olympics) {
-          return {
-            status: 'loading' as const,
-            totalGames: 0,
-            totalCountries: 0,
-            chartData: this.emptyPieChartData,
-            countries: [],
-          };
-        }
-
-        // Transformation des données brutes en une liste simplifiée pour la vue.
-        const countries: CountryMedal[] = olympics.map((olympic) => ({
-          id: olympic.id,
-          name: olympic.country,
-          totalMedals: olympic.participations.reduce(
-            (total, participation) => total + participation.medalsCount,
-            0
-          ),
-        }));
-
-        // On collecte l'ensemble des années représentées pour calculer le nombre total de Jeux.
-        const years = new Set<number>();
-        olympics.forEach((olympic) =>
-          olympic.participations.forEach((participation) =>
-            years.add(participation.year)
-          )
-        );
-
-        // Construction du jeu de données attendu par Chart.js pour le camembert.
-        const chartData: ChartData<'pie', number[], string> = {
-          labels: countries.map((country) => country.name),
-          datasets: [
-            {
-              data: countries.map((country) => country.totalMedals),
-              backgroundColor: countries.map(
-                (_, index) => this.chartColors[index % this.chartColors.length]
-              ),
-              borderColor: '#FFFFFF',
-              borderWidth: 2,
-              hoverOffset: 8,
-            },
-          ],
-        };
-
-        return {
-          status: 'ready' as const,
-          totalGames: years.size,
-          totalCountries: olympics.length,
-          chartData,
-          countries,
-        };
-      }),
-      // On met à jour la correspondance index -> pays lorsque les données sont prêtes.
-      tap((view) => {
-        if (view.status === 'ready') {
-          this.countrySegments = view.countries;
-        } else {
-          this.countrySegments = [];
-        }
-      })
-    );
 
   constructor(
     private readonly olympicService: OlympicService,
     private readonly router: Router
   ) {}
 
-  /**
-   * Gestionnaire déclenché par `baseChart` lorsque l'utilisateur clique sur
-   * une portion du camembert.
-   */
-  public onChartClick({active,}: {event?: ChartEvent; active?: Array<ActiveElement | object>;}): void {
-    if (!this.isActiveElementArray(active) || active.length === 0) {
-      return;
-    }
-
-    const index = active[0].index;
-    const country = this.countrySegments[index];
-
-    if (country) {
-      this.goToCountry(country.id);
-    }
-  }
-
-  /**
-   * Garde de type permettant de s'assurer que le tableau d'éléments actifs
-   * expose bien les propriétés `index` attendues par Chart.js.
-   */
-  private isActiveElementArray(
-    elements?: Array<ActiveElement | object>): 
-    elements is ActiveElement[] 
+  ngOnInit(): void 
   {
-    return (
-      Array.isArray(elements) &&
-      elements.every(
-        (element) =>
-          'index' in element &&
-          'datasetIndex' in element &&
-          typeof element.index === 'number'
-      )
+    Chart.register(ChartDataLabels);
+
+    this.olympics$ = this.olympicService.getOlympics();
+    this.viewModel$ = this.olympics$.pipe(
+      filter((olympics): olympics is OlympicCountry[] => Array.isArray(olympics)),
+      map((olympics) => {
+        const countriesCount = olympics.length;
+        const olympicsCount = olympics.reduce(
+          (total, country) => total + country.participations.length,
+          0
+        );
+        const chartLabels = olympics.map((country) => country.country);
+        const chartData = olympics.map((country) =>
+          country.participations.reduce(
+            (medalSum, participation) => medalSum + participation.medalsCount,
+            0
+          )
+        );
+        return {
+          countriesCount,
+          olympicsCount,
+          chartData: {
+            labels: chartLabels,
+            datasets: [
+              {
+                data: chartData,
+                backgroundColor: chartLabels.map(() => this.getRandomColor()),
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                hoverOffset: 12,
+              },
+            ],
+          } as ChartData<'pie', number[], string | string[]>,
+        };
+      })
     );
   }
 
-  /**
-   * Redirige l'utilisateur vers la page de détails du pays sélectionné.
-   */
-  public goToCountry(countryId: number): void {
+  public goToCountry(countryId: number): void 
+  {
     this.router.navigate(['/country', countryId]);
   }
+  
+  public getRandomColor() 
+  {
+    // Génère une couleur hexadécimale aléatoire
+    return '#' + Math.floor(Math.random()*16777215).toString(16);
+  }
+}
+
+interface OlympicParticipation {
+  id: number;
+  year: number;
+  city: string;
+  medalsCount: number;
+  athleteCount: number;
+}
+
+interface OlympicCountry {
+  id: number;
+  country: string;
+  participations: OlympicParticipation[];
+}
+
+interface HomeViewModel {
+  countriesCount: number;
+  olympicsCount: number;
+  chartData: ChartData<'pie', number[], string | string[]>;
 }

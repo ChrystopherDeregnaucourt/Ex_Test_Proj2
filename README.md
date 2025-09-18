@@ -1,66 +1,29 @@
-# Olympic Games Dashboard
+# OlympicGamesStarter
 
-An interactive Angular dashboard that showcases the medal history of countries from previous Olympic Games. The application was designed to match the provided wireframes and to work seamlessly on desktop and mobile screens.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.3.
 
-## Features
+Don't forget to install your node_modules before starting (`npm install`).
 
-- **Dashboard overview** with the total number of Olympic editions and participating countries.
-- **Interactive pie chart** displaying the number of medals per country (click a country to open its detailed view).
-- **Country detail page** with key metrics and a line chart showing the evolution of medals through the years.
-- Responsive layout with accessible UI states for loading and error handling.
+## Development server
 
-## Getting started
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-### Prerequisites
+## Build
 
-- [Node.js](https://nodejs.org/) version 18 or higher (LTS recommended)
-- [npm](https://www.npmjs.com/) version 9 or higher
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-### Installation
+## Where to start
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Launch the development server:
-   ```bash
-   npm start
-   ```
-3. Open your browser at [http://localhost:4200](http://localhost:4200).
+As you can see, an architecture has already been defined for the project. It is just a suggestion, you can choose to use your own. The predefined architecture includes (in addition to the default angular architecture) the following:
 
-The application automatically reloads when a source file is updated.
+- `components` folder: contains every reusable components
+- `pages` folder: contains components used for routing
+- `core` folder: contains the business logic (`services` and `models` folders)
 
-### Available scripts
+I suggest you to start by understanding this starter code. Pay an extra attention to the `app-routing.module.ts` and the `olympic.service.ts`.
 
-- `npm start` – Start the local development server.
-- `npm run build` – Build the project for production in the `dist/` directory.
-- `npm test` – Run the unit tests with Karma.
+Once mastered, you should continue by creating the typescript interfaces inside the `models` folder. As you can see I already created two files corresponding to the data included inside the `olympic.json`. With your interfaces, improve the code by replacing every `any` by the corresponding interface.
 
-## Project structure
+You're now ready to implement the requested features.
 
-```
-src/
-├── app/
-│   ├── core/            # Models and services
-│   ├── pages/
-│   │   ├── home/        # Dashboard (pie chart) page
-│   │   ├── country-details/ # Detail (line chart) page
-│   │   └── not-found/
-│   ├── app-routing.module.ts
-│   └── app.module.ts
-└── assets/mock/         # Olympic data source
-```
-
-The Olympic dataset is stored under `src/assets/mock/olympic.json`. The `OlympicService` handles data retrieval and exposes typed observables to the application.
-
-## Tech stack
-
-- [Angular 18](https://angular.io/)
-- [ng2-charts](https://valor-software.com/ng2-charts/) & [Chart.js](https://www.chartjs.org/) for data visualisation
-- [RxJS](https://rxjs.dev/) for reactive data flows
-
-## Notes
-
-- All HTTP calls are encapsulated in Angular services following best practices.
-- Observables are consumed via the `async` pipe to avoid manual subscriptions.
-- The codebase is fully typed with dedicated interfaces for Olympic countries and participations.
+Good luck!
