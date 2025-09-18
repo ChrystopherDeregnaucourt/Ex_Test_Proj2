@@ -6,9 +6,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   ChartConfiguration,
   ChartData,
-  ChartType,
-  TooltipItem,
   Chart,
+  Plugin,
+  TooltipItem,
 } from 'chart.js';
 
 @Component({
@@ -30,36 +30,22 @@ export class HomeComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-    legend: {
-      display: false, // Cache la légende classique
-      labels: {
-        usePointStyle: true,
-        color: '#1f2937',
-        padding: 20,
-        font: {
-          family: '"Poppins", "Segoe UI", Arial, sans-serif',
-          size: 13,
-          weight: 500,
+      legend: {
+        display: false,
+        labels: {
+          usePointStyle: true,
+          color: '#1f2937',
+          padding: 20,
+          font: {
+            family: '"Poppins", "Segoe UI", Arial, sans-serif',
+            size: 13,
+            weight: 500,
+          },
         },
       },
-    },
-    datalabels: {
-      color: '#333',
-      font: {
-        weight: 'bold',
-        size: 12,
+      datalabels: {
+        display: false,
       },
-      formatter: (value: number, context: { chart: Chart; dataIndex: number }) => {
-        const label = context.chart.data.labels?.[context.dataIndex] ?? '';
-        return `${label}: ${value}`; // Affiche le label et la valeur
-      },
-      anchor: 'end',
-      align: 'end',
-      offset: 10,
-      backgroundColor: 'rgba(255,255,255,0.8)',
-      borderRadius: 6,
-      padding: 4,
-    },
       tooltip: {
         callbacks: {
           label: (context: TooltipItem<'pie'>) => {
@@ -71,14 +57,73 @@ export class HomeComponent implements OnInit {
     },
   };
 
+  private readonly calloutLabelsPlugin: Plugin<'pie'> = {
+    id: 'pieCalloutLabels',
+    afterDatasetsDraw: (chart) => {
+      const { ctx, data } = chart;
+      const dataset = data.datasets[0];
+      const meta = chart.getDatasetMeta(0);
+
+      if (!dataset || !meta?.data.length) {
+        return;
+      }
+
+      meta.data.forEach((element, index) => {
+        const {
+          x: centerX,
+          y: centerY,
+          startAngle,
+          endAngle,
+          outerRadius,
+        } = element.getProps(['x', 'y', 'startAngle', 'endAngle', 'outerRadius'], true);
+
+        const value = Number(dataset.data[index]);
+
+        if (!value) {
+          return;
+        }
+
+        const angle = (startAngle + endAngle) / 2;
+        const radialGap = 14;
+        const horizontalGap = 26;
+        const startX = centerX + Math.cos(angle) * outerRadius;
+        const startY = centerY + Math.sin(angle) * outerRadius;
+        const middleX = centerX + Math.cos(angle) * (outerRadius + radialGap);
+        const middleY = centerY + Math.sin(angle) * (outerRadius + radialGap);
+        const isRightSide = Math.cos(angle) >= 0;
+        const endX = middleX + (isRightSide ? horizontalGap : -horizontalGap);
+        const endY = middleY;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(middleX, middleY);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        const label = data.labels?.[index] ?? '';
+        const text = `${label}: ${value}`;
+
+        ctx.font = "600 12px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = '#1f2937';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = isRightSide ? 'left' : 'right';
+        ctx.fillText(text, endX + (isRightSide ? 8 : -8), endY);
+        ctx.restore();
+      });
+    },
+  };
+
   constructor(
     private readonly olympicService: OlympicService,
     private readonly router: Router
   ) {}
 
-  ngOnInit(): void 
+  ngOnInit(): void
   {
-    Chart.register(ChartDataLabels);
+    Chart.register(ChartDataLabels, this.calloutLabelsPlugin);
 
     this.olympics$ = this.olympicService.getOlympics();
     this.viewModel$ = this.olympics$.pipe(
