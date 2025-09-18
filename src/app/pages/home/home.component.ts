@@ -6,9 +6,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   ChartConfiguration,
   ChartData,
-  ChartType,
-  TooltipItem,
   Chart,
+  Plugin,
+  TooltipItem,
 } from 'chart.js';
 
 @Component({
@@ -29,37 +29,31 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 32,
+        bottom: 32,
+        left: 120,
+        right: 120,
+      },
+    },
     plugins: {
-    legend: {
-      display: false, // Cache la légende classique
-      labels: {
-        usePointStyle: true,
-        color: '#1f2937',
-        padding: 20,
-        font: {
-          family: '"Poppins", "Segoe UI", Arial, sans-serif',
-          size: 13,
-          weight: 500,
+      legend: {
+        display: false,
+        labels: {
+          usePointStyle: true,
+          color: '#1f2937',
+          padding: 20,
+          font: {
+            family: '"Poppins", "Segoe UI", Arial, sans-serif',
+            size: 13,
+            weight: 500,
+          },
         },
       },
-    },
-    datalabels: {
-      color: '#333',
-      font: {
-        weight: 'bold',
-        size: 12,
+      datalabels: {
+        display: false,
       },
-      formatter: (value: number, context: { chart: Chart; dataIndex: number }) => {
-        const label = context.chart.data.labels?.[context.dataIndex] ?? '';
-        return `${label}: ${value}`; // Affiche le label et la valeur
-      },
-      anchor: 'end',
-      align: 'end',
-      offset: 10,
-      backgroundColor: 'rgba(255,255,255,0.8)',
-      borderRadius: 6,
-      padding: 4,
-    },
       tooltip: {
         callbacks: {
           label: (context: TooltipItem<'pie'>) => {
@@ -71,14 +65,85 @@ export class HomeComponent implements OnInit {
     },
   };
 
+  private readonly calloutLabelsPlugin: Plugin<'pie'> = {
+    id: 'pieCalloutLabels',
+    afterDatasetsDraw: (chart) => {
+      const { ctx, data } = chart;
+      const dataset = data.datasets[0];
+      const meta = chart.getDatasetMeta(0);
+
+      if (!dataset || !meta?.data.length) {
+        return;
+      }
+
+      meta.data.forEach((element, index) => {
+        const {
+          x: centerX,
+          y: centerY,
+          startAngle,
+          endAngle,
+          outerRadius,
+        } = element.getProps(['x', 'y', 'startAngle', 'endAngle', 'outerRadius'], true);
+
+        const value = Number(dataset.data[index]);
+
+        if (!value) {
+          return;
+        }
+
+        const angle = (startAngle + endAngle) / 2;
+        const radialGap = 18;
+        const horizontalGap = 36;
+        const startX = centerX + Math.cos(angle) * outerRadius;
+        const startY = centerY + Math.sin(angle) * outerRadius;
+        const middleX = centerX + Math.cos(angle) * (outerRadius + radialGap);
+        const middleY = centerY + Math.sin(angle) * (outerRadius + radialGap);
+        const isRightSide = Math.cos(angle) >= 0;
+        const endX = middleX + (isRightSide ? horizontalGap : -horizontalGap);
+        const endY = middleY;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(middleX, middleY);
+        ctx.lineTo(endX, endY);
+        const backgroundColors = dataset.backgroundColor ?? [];
+        const segmentColor = Array.isArray(backgroundColors)
+          ? (backgroundColors[index] as string | undefined)
+          : (backgroundColors as string | undefined);
+        ctx.strokeStyle = segmentColor ?? '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        const label = data.labels?.[index] ?? '';
+        const valueText = `${value}`;
+        const textAlign = isRightSide ? 'left' : 'right';
+        const textX = endX + (isRightSide ? 12 : -12);
+
+        ctx.textAlign = textAlign;
+
+        ctx.font = "600 13px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = '#0f172a';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(label, textX, endY - 2);
+
+        ctx.font = "500 12px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = '#475569';
+        ctx.textBaseline = 'top';
+        ctx.fillText(valueText, textX, endY + 2);
+        ctx.restore();
+      });
+    },
+  };
+
   constructor(
     private readonly olympicService: OlympicService,
     private readonly router: Router
   ) {}
 
-  ngOnInit(): void 
+  ngOnInit(): void
   {
-    Chart.register(ChartDataLabels);
+    Chart.register(ChartDataLabels, this.calloutLabelsPlugin);
 
     this.olympics$ = this.olympicService.getOlympics();
     this.viewModel$ = this.olympics$.pipe(
