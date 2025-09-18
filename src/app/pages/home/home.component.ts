@@ -6,10 +6,8 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   ChartConfiguration,
   ChartData,
-  ChartDataset,
   Chart,
   Plugin,
-  ScriptableContext,
   TooltipItem,
 } from 'chart.js';
 
@@ -31,6 +29,14 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 32,
+        bottom: 32,
+        left: 120,
+        right: 120,
+      },
+    },
     plugins: {
       legend: {
         display: false,
@@ -59,7 +65,7 @@ export class HomeComponent implements OnInit {
     },
   };
 
-    private readonly calloutLabelsPlugin: Plugin<'pie'> = {
+  private readonly calloutLabelsPlugin: Plugin<'pie'> = {
     id: 'pieCalloutLabels',
     afterDatasetsDraw: (chart) => {
       const { ctx, data } = chart;
@@ -86,8 +92,8 @@ export class HomeComponent implements OnInit {
         }
 
         const angle = (startAngle + endAngle) / 2;
-        const radialGap = 14;
-        const horizontalGap = 26;
+        const radialGap = 18;
+        const horizontalGap = 36;
         const startX = centerX + Math.cos(angle) * outerRadius;
         const startY = centerY + Math.sin(angle) * outerRadius;
         const middleX = centerX + Math.cos(angle) * (outerRadius + radialGap);
@@ -101,18 +107,30 @@ export class HomeComponent implements OnInit {
         ctx.moveTo(startX, startY);
         ctx.lineTo(middleX, middleY);
         ctx.lineTo(endX, endY);
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 1.5;
+        const backgroundColors = dataset.backgroundColor ?? [];
+        const segmentColor = Array.isArray(backgroundColors)
+          ? (backgroundColors[index] as string | undefined)
+          : (backgroundColors as string | undefined);
+        ctx.strokeStyle = segmentColor ?? '#94a3b8';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         const label = data.labels?.[index] ?? '';
-        const text = `${label}: ${value}`;
+        const valueText = `${value}`;
+        const textAlign = isRightSide ? 'left' : 'right';
+        const textX = endX + (isRightSide ? 12 : -12);
 
-        ctx.font = "600 12px 'Poppins', 'Segoe UI', Arial, sans-serif";
-        ctx.fillStyle = '#1f2937';
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = isRightSide ? 'left' : 'right';
-        ctx.fillText(text, endX + (isRightSide ? 8 : -8), endY);
+        ctx.textAlign = textAlign;
+
+        ctx.font = "600 13px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = '#0f172a';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(label, textX, endY - 2);
+
+        ctx.font = "500 12px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = '#475569';
+        ctx.textBaseline = 'top';
+        ctx.fillText(valueText, textX, endY + 2);
         ctx.restore();
       });
     },
@@ -143,18 +161,14 @@ export class HomeComponent implements OnInit {
             0
           )
         );
-        const pieDataset: ChartDataset<'pie', number[]> = {
-          data: chartData,
-          backgroundColor: chartLabels.map(() => this.getRandomColor()),
-          borderColor: '#ffffff',
-          borderWidth: 2,
-          hoverOffset: 12,
-        };
-
         return {
           countriesCount,
           olympicsCount,
           chartData: {
+            labels: chartLabels,
+            datasets: [
+              {
+                data: chartData,
             labels: chartLabels,
             datasets: [pieDataset],
           } as ChartData<'pie', number[], string | string[]>,
