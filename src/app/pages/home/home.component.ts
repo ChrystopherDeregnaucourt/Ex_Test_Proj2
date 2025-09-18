@@ -6,8 +6,10 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   ChartConfiguration,
   ChartData,
+  ChartDataset,
   Chart,
   Plugin,
+  ScriptableContext,
   TooltipItem,
 } from 'chart.js';
 
@@ -29,6 +31,20 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    radius: '58%',
+    layout: {
+      padding: (context: ScriptableContext<'pie'>) => {
+        const basePadding = context.chart.width * 0.28;
+        const horizontalPadding = Math.max(96, Math.min(180, basePadding));
+
+        return {
+          top: 28,
+          bottom: 28,
+          left: horizontalPadding,
+          right: horizontalPadding,
+        };
+      },
+    },
     plugins: {
       legend: {
         display: false,
@@ -60,11 +76,11 @@ export class HomeComponent implements OnInit {
   private readonly calloutLabelsPlugin: Plugin<'pie'> = {
     id: 'pieCalloutLabels',
     afterDatasetsDraw: (chart) => {
-      const { ctx, data } = chart;
+      const { ctx, data, chartArea } = chart;
       const dataset = data.datasets[0];
       const meta = chart.getDatasetMeta(0);
 
-      if (!dataset || !meta?.data.length) {
+      if (!dataset || !meta?.data.length || !chartArea) {
         return;
       }
 
@@ -84,14 +100,36 @@ export class HomeComponent implements OnInit {
         }
 
         const angle = (startAngle + endAngle) / 2;
-        const radialGap = 14;
-        const horizontalGap = 26;
+        const radialGap = 18;
+        const { left: chartLeft, right: chartRight } = chartArea;
+        const canvasWidth = chart.width;
+        const labelExtension = Math.min(canvasWidth * 0.35, 200);
+        const textPadding = 12;
+        const safetyPadding = 6;
+
         const startX = centerX + Math.cos(angle) * outerRadius;
         const startY = centerY + Math.sin(angle) * outerRadius;
         const middleX = centerX + Math.cos(angle) * (outerRadius + radialGap);
         const middleY = centerY + Math.sin(angle) * (outerRadius + radialGap);
         const isRightSide = Math.cos(angle) >= 0;
-        const endX = middleX + (isRightSide ? horizontalGap : -horizontalGap);
+        const label = data.labels?.[index] ?? '';
+        const text = `${label}: ${value}`;
+
+        ctx.font = "600 12px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        const textWidth = ctx.measureText(text).width;
+
+        const availableRight = Math.max(canvasWidth - chartRight - textPadding, 0);
+        const availableLeft = Math.max(chartLeft - textPadding, 0);
+        const desiredRightEnd = chartRight + Math.min(labelExtension, availableRight);
+        const desiredLeftEnd = chartLeft - Math.min(labelExtension, availableLeft);
+
+        const maxRightEnd = canvasWidth - textPadding - safetyPadding;
+        const minLeftEnd = textWidth + textPadding + safetyPadding;
+
+        let endX = isRightSide
+          ? Math.min(desiredRightEnd, maxRightEnd)
+          : Math.max(Math.min(desiredLeftEnd, chartLeft - safetyPadding), minLeftEnd);
+
         const endY = middleY;
 
         ctx.save();
@@ -103,14 +141,22 @@ export class HomeComponent implements OnInit {
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        const label = data.labels?.[index] ?? '';
-        const text = `${label}: ${value}`;
-
-        ctx.font = "600 12px 'Poppins', 'Segoe UI', Arial, sans-serif";
         ctx.fillStyle = '#1f2937';
         ctx.textBaseline = 'middle';
         ctx.textAlign = isRightSide ? 'left' : 'right';
-        ctx.fillText(text, endX + (isRightSide ? 8 : -8), endY);
+
+        const textX = isRightSide
+          ? Math.min(endX + textPadding, canvasWidth - safetyPadding)
+          : Math.max(
+              Math.min(endX - textPadding, chartLeft - textPadding),
+              textWidth + safetyPadding
+            );
+
+        endX = isRightSide
+          ? Math.min(endX, textX - textPadding)
+          : Math.max(endX, textX + textPadding);
+
+        ctx.fillText(text, textX, endY);
         ctx.restore();
       });
     },
@@ -141,20 +187,20 @@ export class HomeComponent implements OnInit {
             0
           )
         );
+        const pieDataset: ChartDataset<'pie', number[]> = {
+          data: chartData,
+          backgroundColor: chartLabels.map(() => this.getRandomColor()),
+          borderColor: '#ffffff',
+          borderWidth: 2,
+          hoverOffset: 12,
+        };
+
         return {
           countriesCount,
           olympicsCount,
           chartData: {
             labels: chartLabels,
-            datasets: [
-              {
-                data: chartData,
-                backgroundColor: chartLabels.map(() => this.getRandomColor()),
-                borderColor: '#ffffff',
-                borderWidth: 2,
-                hoverOffset: 12,
-              },
-            ],
+            datasets: [pieDataset],
           } as ChartData<'pie', number[], string | string[]>,
         };
       })
