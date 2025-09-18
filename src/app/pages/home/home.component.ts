@@ -8,6 +8,7 @@ import {
   ChartData,
   Chart,
   Plugin,
+  ScriptableContext,
   TooltipItem,
 } from 'chart.js';
 
@@ -29,12 +30,16 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
-    layout: {
-      padding: {
-        top: 24,
-        bottom: 24,
-        left: (context) => Math.min(72, context.chart.width * 0.25),
-        right: (context) => Math.min(72, context.chart.width * 0.25),
+        layout: {
+      padding: (context: ScriptableContext<'pie'>) => {
+        const horizontalPadding = Math.min(72, context.chart.width * 0.25);
+
+        return {
+          top: 24,
+          bottom: 24,
+          left: horizontalPadding,
+          right: horizontalPadding,
+        };
       },
     },
     plugins: {
@@ -94,7 +99,6 @@ export class HomeComponent implements OnInit {
 
         const angle = (startAngle + endAngle) / 2;
         const radialGap = 18;
-        const labelMargin = 32;
         const { left: chartLeft, right: chartRight } = chartArea;
         const startX = centerX + Math.cos(angle) * outerRadius;
         const startY = centerY + Math.sin(angle) * outerRadius;
