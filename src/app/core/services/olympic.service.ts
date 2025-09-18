@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+
+// Modèle représentant les données olympiques.
 import { Olympic } from '../models/Olympic';
 
 @Injectable({
@@ -18,6 +20,9 @@ export class OlympicService {
    *  - `null` lorsqu'une erreur est survenue
    *  - `Olympic[]` lorsque les données ont été récupérées avec succès.
    */
+  //On utilise BehaviorSubject au lieu de Subject pour stocker et émettre l'état des données olympiques.
+  //BehaviorSubject permet de conserver la dernière valeur émise et de la fournir immédiatement aux nouveaux abonnés.
+  //Ici, on initialise le BehaviorSubject avec undefined pour indiquer que les données sont en cours de chargement.
   private olympics$ = new BehaviorSubject<Olympic[] | null | undefined>(
     undefined
   );
@@ -29,13 +34,16 @@ export class OlympicService {
    * dans le BehaviourSubject, tout en exposant l'observable à l'appelant.
    */
   loadInitialData(): Observable<Olympic[] | null> {
-    return this.http.get<Olympic[]>(this.olympicUrl).pipe(
+    return this.http.get<Olympic[]>(this.olympicUrl).pipe
+    (
       tap((value) => this.olympics$.next(value)),
-      catchError((error) => {
+
+      catchError((error) => 
+      {
         // Journalisation simple pour diagnostiquer l'échec de la requête.
         console.error(error);
-        // On publie `null` afin que les composants sortent de l'état de chargement
-        // et puissent afficher un message d'erreur utilisateur.
+
+        // On publie `null` afin que les composants sortent de l'état de chargement.
         this.olympics$.next(null);
         return of(null);
       })

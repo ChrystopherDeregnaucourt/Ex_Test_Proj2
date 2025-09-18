@@ -36,7 +36,8 @@ interface HomeViewModel {
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent 
+{
   /**
    * Palette de couleurs utilisée pour différencier les pays dans le graphique.
    */
@@ -185,12 +186,7 @@ export class HomeComponent {
    * Gestionnaire déclenché par `baseChart` lorsque l'utilisateur clique sur
    * une portion du camembert.
    */
-  public onChartClick({
-    active,
-  }: {
-    event?: ChartEvent;
-    active?: Array<ActiveElement | object>;
-  }): void {
+  public onChartClick({active,}: {event?: ChartEvent; active?: Array<ActiveElement | object>;}): void {
     if (!this.isActiveElementArray(active) || active.length === 0) {
       return;
     }
@@ -208,8 +204,9 @@ export class HomeComponent {
    * expose bien les propriétés `index` attendues par Chart.js.
    */
   private isActiveElementArray(
-    elements?: Array<ActiveElement | object>
-  ): elements is ActiveElement[] {
+    elements?: Array<ActiveElement | object>): 
+    elements is ActiveElement[] 
+  {
     return (
       Array.isArray(elements) &&
       elements.every(
