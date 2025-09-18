@@ -29,6 +29,14 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 24,
+        bottom: 24,
+        left: (context) => Math.min(72, context.chart.width * 0.25),
+        right: (context) => Math.min(72, context.chart.width * 0.25),
+      },
+    },
     plugins: {
       legend: {
         display: false,
@@ -60,11 +68,12 @@ export class HomeComponent implements OnInit {
   private readonly calloutLabelsPlugin: Plugin<'pie'> = {
     id: 'pieCalloutLabels',
     afterDatasetsDraw: (chart) => {
-      const { ctx, data } = chart;
+      const { ctx, data, chartArea } = chart;
       const dataset = data.datasets[0];
       const meta = chart.getDatasetMeta(0);
+      const labelMargin = Math.min(28, chart.width * 0.12);
 
-      if (!dataset || !meta?.data.length) {
+      if (!dataset || !meta?.data.length || !chartArea) {
         return;
       }
 
@@ -84,14 +93,16 @@ export class HomeComponent implements OnInit {
         }
 
         const angle = (startAngle + endAngle) / 2;
-        const radialGap = 14;
-        const horizontalGap = 26;
+        const radialGap = 18;
+        const { left: chartLeft, right: chartRight } = chartArea;
         const startX = centerX + Math.cos(angle) * outerRadius;
         const startY = centerY + Math.sin(angle) * outerRadius;
         const middleX = centerX + Math.cos(angle) * (outerRadius + radialGap);
         const middleY = centerY + Math.sin(angle) * (outerRadius + radialGap);
         const isRightSide = Math.cos(angle) >= 0;
-        const endX = middleX + (isRightSide ? horizontalGap : -horizontalGap);
+        const endX = isRightSide
+          ? chartRight + labelMargin
+          : chartLeft - labelMargin;
         const endY = middleY;
 
         ctx.save();
