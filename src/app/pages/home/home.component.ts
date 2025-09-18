@@ -29,6 +29,14 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 24,
+        bottom: 24,
+        left: (context) => Math.min(72, context.chart.width * 0.25),
+        right: (context) => Math.min(72, context.chart.width * 0.25),
+      },
+    },
     plugins: {
       legend: {
         display: false,
@@ -63,6 +71,7 @@ export class HomeComponent implements OnInit {
       const { ctx, data, chartArea } = chart;
       const dataset = data.datasets[0];
       const meta = chart.getDatasetMeta(0);
+      const labelMargin = Math.min(28, chart.width * 0.12);
 
       if (!dataset || !meta?.data.length || !chartArea) {
         return;
