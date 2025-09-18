@@ -94,6 +94,7 @@ export class HomeComponent implements OnInit {
 
         const angle = (startAngle + endAngle) / 2;
         const radialGap = 18;
+        const labelMargin = 32;
         const { left: chartLeft, right: chartRight } = chartArea;
         const startX = centerX + Math.cos(angle) * outerRadius;
         const startY = centerY + Math.sin(angle) * outerRadius;
