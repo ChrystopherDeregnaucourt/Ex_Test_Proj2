@@ -84,14 +84,15 @@
 }
 
 .chart-card {
-  width: 100%;
+  width: min(100%, 480px);
+  margin: 0 auto;
   border-radius: 1.75rem;
 }
 
 .chart-card__canvas {
   position: relative;
   width: 100%;
-  min-height: 320px;
+  min-height: clamp(240px, 48vw, 360px);
 }
 
 .chart-card__canvas canvas {
@@ -113,7 +114,11 @@
     text-align: center;
   }
 
+  .chart-card {
+    width: 100%;
+  }
+
   .chart-card__canvas {
-    min-height: 280px;
+    min-height: clamp(220px, 60vw, 300px);
   }
 }

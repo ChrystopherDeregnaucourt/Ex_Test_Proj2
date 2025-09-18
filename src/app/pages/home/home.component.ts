@@ -169,12 +169,8 @@ export class HomeComponent implements OnInit {
             datasets: [
               {
                 data: chartData,
-                backgroundColor: chartLabels.map(() => this.getRandomColor()),
-                borderColor: '#ffffff',
-                borderWidth: 2,
-                hoverOffset: 12,
-              },
-            ],
+            labels: chartLabels,
+            datasets: [pieDataset],
           } as ChartData<'pie', number[], string | string[]>,
         };
       })
