@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
   public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
-    layout: {
+        layout: {
       padding: (context: ScriptableContext<'pie'>) => {
         const horizontalPadding = Math.min(72, context.chart.width * 0.25);
 
