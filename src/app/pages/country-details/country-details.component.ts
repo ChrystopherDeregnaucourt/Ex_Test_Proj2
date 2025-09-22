@@ -26,6 +26,8 @@ export class CountryDetailsComponent implements OnInit {
     datasets: [],
   };
 
+  // ViewModel partagé avec le template ; initialisé en mode "loading" pour
+  // éviter les clignotements lors de la résolution de l'observable.
   public viewModel$: Observable<any> = of({
     status: 'loading',
     countryName: '',

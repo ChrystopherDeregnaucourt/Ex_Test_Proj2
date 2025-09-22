@@ -9,10 +9,17 @@ import { Olympic } from '../models/Olympic';
   providedIn: 'root',
 })
 
-export class OlympicService 
+// Service maison : il encapsule la récupération des données mockées et expose
+// plusieurs ViewModels prêts à consommer côté composants. Rien de révolutionnaire,
+// mais cela évite de répéter les mêmes transformations partout.
+export class OlympicService
 {
   private olympicUrl = './assets/mock/olympic.json';
 
+  // Je m'appuie sur un BehaviorSubject pour mémoriser l'état courant :
+  //   - `undefined` : chargement en cours
+  //   - `null`      : échec du chargement
+  //   - `Olympic[]` : données prêtes à l'emploi
   private olympics$ = new BehaviorSubject<Olympic[] | null | undefined>
   (
     undefined
@@ -23,6 +30,9 @@ export class OlympicService
    /**
    * Déclenche une récupération des données olympiques et stocke le résultat
    * dans le BehaviourSubject, tout en exposant l'observable à l'appelant.
+   *
+   * Note : Le service reste ainsi maître du cache alors que les composants se
+   * contentent de s'abonner sans se préoccuper des erreurs réseau.
    */
   loadInitialData(): Observable<Olympic[] | null> 
   {
@@ -30,12 +40,13 @@ export class OlympicService
     (
       tap((value) => this.olympics$.next(value)),
 
-      catchError((error) => 
+      catchError((error) =>
       {
         // Journalisation simple pour diagnostiquer l'échec de la requête.
         console.error(error);
 
         // On publie `null` afin que les composants sortent de l'état de chargement.
+        // Cette convention est ensuite réexpliquée dans les méthodes exposant les VM.
         this.olympics$.next(null);
         return of(null);
       })
@@ -44,6 +55,8 @@ export class OlympicService
 
   getOlympics(): Observable<OlympicCountry[]> {
     return this.olympics$.pipe(
+      // L'idée : faire en sorte que la majorité des consommateurs puissent traiter
+      // directement un tableau, quitte à ce qu'il soit vide pendant un chargement.
       map((olympics) => olympics || []), // Remplace `null` ou `undefined` par un tableau vide
     );
   }
