@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NgChartsModule } from 'ng2-charts';
-import { of } from 'rxjs';
-import { OlympicService } from 'src/app/core/services/olympic.service';
 
 import { HomeComponent } from './home.component';
 
@@ -10,19 +8,12 @@ describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
 
-  beforeEach(async () => {
+    beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, NgChartsModule],
       declarations: [HomeComponent],
-      providers: [
-        {
-          provide: OlympicService,
-          useValue: {
-            getOlympics: () => of(undefined),
-          },
-        },
-      ],
-    }).compileComponents();
+      imports: [HttpClientTestingModule, NgChartsModule],
+    })
+      .compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;

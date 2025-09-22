@@ -10,11 +10,11 @@
 
 .details__card {
   background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
   padding: 2rem 1.75rem 2.5rem;
   display: grid;
   gap: 2rem;
+  min-width: 0;
+  min-height: 0;
 }
 
 .details__top-bar {
@@ -46,36 +46,58 @@
 
 .details__header {
   display: grid;
+  justify-items: center;
   gap: 1.5rem;
+  min-width: 0;
+  min-height: 0;
 }
 
 .details__title {
   margin: 0;
-  font-size: clamp(1.9rem, 2vw + 1rem, 2.6rem);
-  font-weight: 700;
-  color: #0f172a;
+  padding: 0.5rem 1.25rem;
+  font-size: clamp(1.5rem, 2.3vw, 2.25rem);
+  text-align: center;
+  font-weight: 200;
+  width: fit-content;
+  color: white;
+  background-color: #04838f;
+  border-radius: 0.75rem;
 }
 
 .details__metrics {
-  display: grid;
+  display: flex;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  justify-content: center;
+  align-items: center; // Ajouter pour centrer verticalement
+  flex-wrap: wrap; // Permettre le retour à la ligne sur petits écrans
+  width: 100%; // S'assurer que le conteneur prend toute la largeur
+  min-width: 0;
+  min-height: 0;
 }
 
 .metric {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(125, 221, 211, 0.12));
+  background: white;
   border-radius: 18px;
-  padding: 1.25rem 1.5rem;
+  border-color: #04838f;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 2px; // Spécifier l'épaisseur de la bordure
+  padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  width: fit-content; // S'adapter à la largeur du contenu
+  min-width: 140px; // Ajouter une largeur minimale pour la cohérence
 }
 
 .metric__label {
-  font-size: 0.95rem;
+  font-size: 0.9rem; // Réduire légèrement la taille de police
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: #64748b;
+  white-space: nowrap; // Empêcher le retour à la ligne du texte
+  text-align: center; // Centrer le texte
 }
 
 .metric__value {
@@ -86,7 +108,10 @@
 
 .details__chart {
   position: relative;
-  min-height: 360px;
+  width: 100%;
+  height: 400px;
+  min-width: 200px;
+  min-height: 500px;
 }
 
 .state-message {
@@ -137,3 +162,12 @@
     padding: 3rem 3.5rem;
   }
 }
+
+@media (max-width: 720px) {
+  .stat-card {
+    width: 100%;
+    min-width: unset;
+    text-align: center;
+  }
+}
+

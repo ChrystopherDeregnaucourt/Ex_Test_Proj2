@@ -1,7 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
+import { RouterModule } from '@angular/router';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -9,8 +12,20 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { CountryDetailsComponent } from './pages/country-details/country-details.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NotFoundComponent, CountryDetailsComponent],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, NgChartsModule],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    NotFoundComponent,
+    CountryDetailsComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    CommonModule,
+    NgChartsModule,
+    RouterModule
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
