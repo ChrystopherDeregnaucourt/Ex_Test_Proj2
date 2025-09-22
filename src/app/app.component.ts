@@ -9,9 +9,13 @@ import { OlympicService } from './core/services/olympic.service';
     standalone: false
 })
 export class AppComponent implements OnInit {
+  // Note perso : je centralise ici l'appel initial pour conserver un point
+  // d'entrée unique lors du bootstrap de l'application Angular.
   constructor(private olympicService: OlympicService) {}
 
   ngOnInit(): void {
+    // On déclenche une unique requête (via `take(1)`) au démarrage afin que le
+    // service mette en cache les données pour le reste de l'application.
     this.olympicService.loadInitialData().pipe(take(1)).subscribe();
   }
 }

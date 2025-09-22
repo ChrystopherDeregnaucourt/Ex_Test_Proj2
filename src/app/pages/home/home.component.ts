@@ -17,17 +17,22 @@ import { DOCUMENT } from '@angular/common';
     styleUrls: ['./home.component.scss'],
     standalone: false
 })
-export class HomeComponent implements OnInit 
+export class HomeComponent implements OnInit
 {
+  // Observable exposant directement la liste brute pour certaines interactions
+  // (ex : clic sur un segment du camembert). L'initialisation à un tableau vide
+  // facilite l'utilisation dans le template sans vérifications excessives.
   public olympics$: Observable<OlympicCountry[]> = of([]);
 
+  // ViewModel complet qui alimente l'UI : compte des pays, du nombre
+  // d'éditions et la configuration prête à brancher sur Chart.js.
   public viewModel$: Observable<HomeViewModel> = of({
     countriesCount: 0,
     olympicsCount: 0,
     chartData: { labels: [], datasets: [] },
   });
 
-  public pieChartOptions: ChartConfiguration<'pie'>['options'] = 
+  public pieChartOptions: ChartConfiguration<'pie'>['options'] =
   {
     responsive: true,
     maintainAspectRatio: false,
@@ -44,7 +49,7 @@ export class HomeComponent implements OnInit
         const element = elements[0];
         // Récupérer l'index du segment cliqué
         const segmentIndex = element.index;
-        
+
         // Récupérer les données olympiques pour obtenir l'ID du pays
         this.olympics$.pipe(
           map(olympics => olympics[segmentIndex])
@@ -110,11 +115,11 @@ export class HomeComponent implements OnInit
     @Inject(DOCUMENT) private readonly document: Document
   ) {}
 
-  ngOnInit(): void 
+  ngOnInit(): void
   {
     // Enregistrer seulement le plugin des labels
     Chart.register(ChartDataLabels, this.calloutLabelsPlugin);
-    
+
     // Récupération des données des pays olympiques
     this.olympics$ = this.olympicService.getOlympics().pipe(
       filter((olympics) => olympics.length > 0)
@@ -174,6 +179,7 @@ export class HomeComponent implements OnInit
 
   public goToCountry(countryId: number): void
   {
+    // Navigation programmatique : le composant reste ainsi indépendant du HTML.
     this.router.navigate(['/country', countryId]);
   }
 
@@ -268,6 +274,8 @@ export class HomeComponent implements OnInit
         return;
       }
 
+      // Astuce : je garde ce plugin maison pour dessiner des étiquettes en
+      // dehors du graphique uniquement lorsque l'espace disponible le permet.
       // Déterminer si on a assez d'espace pour les labels personnalisés
       const minWidthForCustomLabels = 600;
       const chartWidth = chartArea.width;
@@ -312,9 +320,9 @@ export class HomeComponent implements OnInit
           : endX + maxLineLength;
         
         // Récupérer la couleur du quartier correspondant
-        const backgroundColors = dataset.backgroundColor as string[]; 
+        const backgroundColors = dataset.backgroundColor as string[];
         const segmentColor = backgroundColors?.[index] || '#94a3b8';
-        
+
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(startX, startY);
