@@ -54,6 +54,33 @@
   min-width: 140px;
 }
 
+.dashboard__header {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(1.5rem, 2vw, 2.5rem);
+}
+
+.dashboard__stats {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5rem;
+  
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 2.5vw, 2.5rem);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 .metric__label {
   font-size: 0.9rem;
   letter-spacing: 0.05em;
@@ -71,8 +98,15 @@
 /* Media queries pour les cartes */
 @media (max-width: 720px) {
   .stat-card {
-    width: 100%;
+    width: 70%;
     min-width: unset;
     text-align: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard__stats {
+    gap: 1rem !important; // Encore plus petit espacement sur mobile
+    flex-direction: column; // Empiler verticalement sur très petits écrans si nécessaire
   }
 }

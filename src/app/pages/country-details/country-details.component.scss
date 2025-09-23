@@ -1,20 +1,10 @@
 :host {
   display: block;
-  padding: 2.5rem 1.5rem 3rem;
-}
-
-.details {
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.details__card {
-  background: #ffffff;
-  padding: 2rem 1.75rem 2.5rem;
-  display: grid;
-  gap: 2rem;
-  min-width: 0;
-  min-height: 0;
+  min-height: 100%;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: linear-gradient(135deg, #f4f7ff 0%, #ffffff 60%);
+  color: #1f2937;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .details__top-bar {
@@ -44,23 +34,13 @@
   outline: none;
 }
 
-.details__header {
-  display: grid;
-  justify-items: center;
-  gap: 1.5rem;
-  min-width: 0;
-  min-height: 0;
-}
-
-.details__metrics {
-  display: flex;
-  gap: 1rem;
+// Override des styles globaux pour dashboard__stats sur cette page
+.dashboard__stats {
+  gap: 1.5rem !important; // Réduire l'espacement entre les cartes
   justify-content: center;
-  align-items: center; // Ajouter pour centrer verticalement
-  flex-wrap: wrap; // Permettre le retour à la ligne sur petits écrans
-  width: 100%; // S'assurer que le conteneur prend toute la largeur
-  min-width: 0;
-  min-height: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .details__chart {
@@ -114,9 +94,6 @@
   :host {
     padding: 3rem;
   }
-
-  .details__card {
-    padding: 3rem 3.5rem;
-  }
 }
+
 

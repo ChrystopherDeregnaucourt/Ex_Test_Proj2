@@ -6,7 +6,7 @@ import { OlympicService } from './core/services/olympic.service';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    encapsulation: ViewEncapsulation.None,
+    encapsulation: ViewEncapsulation.None,//Partage des styles
     standalone: false
 })
 export class AppComponent implements OnInit {

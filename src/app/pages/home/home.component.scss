@@ -7,62 +7,6 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-.dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.5rem, 2.5vw, 2.5rem);
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.dashboard__header {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: clamp(1.5rem, 2vw, 2.5rem);
-}
-
-.dashboard__subtitle {
-  margin: 0.5rem 0 0;
-  max-width: 30rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #475569;
-}
-
-.dashboard__stats {
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5rem;
-  
-}
-
-.dashboard__chart {
-  display: flex;
-  flex-direction: column;
-}
-
-.chart-card {
-  width: min(100%, 560px);
-  margin: 0 auto;
-}
-
-.chart-card__canvas {
-  position: relative;
-  width: 100%;
-  min-height: clamp(260px, 55vw, 400px);
-}
-
-.chart-card__canvas canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
 .loading {
   margin-top: 2rem;
   text-align: center;
