@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
-import { filter, map, Observable, of } from 'rxjs';
+import { catchError, filter, map, Observable, of, take } from 'rxjs';
 import { OlympicService, OlympicCountry } from 'src/app/core/services/olympic.service';
 import { Router } from '@angular/router';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -24,14 +24,14 @@ export class HomeComponent implements OnInit
   // facilite l'utilisation dans le template sans vérifications excessives.
   public olympics$: Observable<OlympicCountry[]> = of([]);
 
-  // ViewModel complet qui alimente l'UI : compte des pays, du nombre
-  // d'éditions et la configuration prête à brancher sur Chart.js.
+  // ViewModel complet qui alimente l'UI
   public viewModel$: Observable<HomeViewModel> = of({
     countriesCount: 0,
     olympicsCount: 0,
     chartData: { labels: [], datasets: [] },
   });
 
+  // Plugin pour dessiner des lignes de rappel (callout) depuis les labels
   public pieChartOptions: ChartConfiguration<'pie'>['options'] =
   {
     responsive: true,
@@ -39,7 +39,9 @@ export class HomeComponent implements OnInit
     onResize: (chart, size) => {
       // Gérer l'affichage de la légende selon la taille
       const minWidthForCustomLabels = 600;
-      if (chart.options.plugins?.legend) {
+
+      if (chart.options.plugins?.legend) 
+      {
         chart.options.plugins.legend.display = size.width < minWidthForCustomLabels;
       }
     },
@@ -52,7 +54,9 @@ export class HomeComponent implements OnInit
 
         // Récupérer les données olympiques pour obtenir l'ID du pays
         this.olympics$.pipe(
-          map(olympics => olympics[segmentIndex])
+          map(olympics => olympics[segmentIndex]),
+          catchError(() => of(null)), // Gérer le cas où l'index est hors limites
+          take(1)//Comme je fais une souscription manuelle, je fais un take(1) pour éviter les fuites mémoires (ça veut dire que je prends une seule valeur et je me désabonne)
         ).subscribe(country => {
           if (country) {
             // Naviguer vers la page de détails du pays
@@ -73,7 +77,7 @@ export class HomeComponent implements OnInit
           color: '#1f2937',
           padding: 15,
           font: {
-            family: '"Poppins", "Segoe UI", Arial, sans-serif',
+            family: '"Montserrat", sans-serif',
             size: 12,
             weight: 500,
           },
@@ -92,12 +96,12 @@ export class HomeComponent implements OnInit
         },
         backgroundColor: '#04838f',
         titleFont: {
-          family: '"Poppins", "Segoe UI", Arial, sans-serif',
+          family: '"Montserrat", sans-serif',
           size: 16,
           weight: 600,
         },
         bodyFont: {
-          family: '"Poppins", "Segoe UI", Arial, sans-serif',
+          family: '"Montserrat", sans-serif',
           size: 14,
           weight: 400,
         },
@@ -280,7 +284,6 @@ export class HomeComponent implements OnInit
       const minWidthForCustomLabels = 600;
       const chartWidth = chartArea.width;
       
-      // CORRECTION : Supprimer l'appel à chart.update() pour éviter la boucle infinie
       // Si l'écran est trop petit, ne pas dessiner les labels personnalisés
       if (chartWidth < minWidthForCustomLabels) {
         return; // Sortir sans dessiner les labels personnalisés
@@ -335,7 +338,7 @@ export class HomeComponent implements OnInit
         const label = data.labels?.[index] ?? 'Unknown';
         const text = `${label}`;
 
-        ctx.font = "600 16px 'Poppins', 'Segoe UI', Arial, sans-serif";
+        ctx.font = "600 16px 'Montserrat', sans-serif";
         ctx.fillStyle = '#1f2937';
         ctx.textBaseline = 'middle';
         ctx.textAlign = isRightSide ? 'left' : 'right';
@@ -347,9 +350,6 @@ export class HomeComponent implements OnInit
       });
     },
   };
-
-  // Supprimer le medalImagePlugin car nous n'en avons plus besoin
-
 }
 
 interface HomeViewModel {

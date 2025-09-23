@@ -4,7 +4,7 @@
   padding: clamp(1.5rem, 4vw, 3rem);
   background: linear-gradient(135deg, #f4f7ff 0%, #ffffff 60%);
   color: #1f2937;
-  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .dashboard {
@@ -66,15 +66,14 @@
 }
 
 .stat-card__label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
+  font-size: 1.25rem;
   letter-spacing: 0.12em;
   color: #64748b;
 }
 
 .stat-card__value {
-  font-size: clamp(2rem, 3vw, 2.75rem);
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 400;
   color: #0f172a;
 }
 

@@ -9,8 +9,7 @@ import { OlympicService } from './core/services/olympic.service';
     standalone: false
 })
 export class AppComponent implements OnInit {
-  // Note perso : je centralise ici l'appel initial pour conserver un point
-  // d'entrée unique lors du bootstrap de l'application Angular.
+  // Note perso : je centralise ici l'appel initial pour conserver un point d'entrée unique
   constructor(private olympicService: OlympicService) {}
 
   ngOnInit(): void {
