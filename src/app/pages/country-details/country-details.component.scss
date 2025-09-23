@@ -52,18 +52,6 @@
   min-height: 0;
 }
 
-.details__title {
-  margin: 0;
-  padding: 0.5rem 1.25rem;
-  font-size: clamp(1.5rem, 2.3vw, 2.25rem);
-  text-align: center;
-  font-weight: 200;
-  width: fit-content;
-  color: white;
-  background-color: #04838f;
-  border-radius: 0.75rem;
-}
-
 .details__metrics {
   display: flex;
   gap: 1rem;
@@ -73,37 +61,6 @@
   width: 100%; // S'assurer que le conteneur prend toute la largeur
   min-width: 0;
   min-height: 0;
-}
-
-.metric {
-  background: white;
-  border-radius: 18px;
-  border-color: #04838f;
-  box-sizing: border-box;
-  border-style: solid;
-  border-width: 2px; // Spécifier l'épaisseur de la bordure
-  padding: 1rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: fit-content; // S'adapter à la largeur du contenu
-  min-width: 140px; // Ajouter une largeur minimale pour la cohérence
-}
-
-.metric__label {
-  font-size: 0.9rem; // Réduire légèrement la taille de police
-  letter-spacing: 0.05em;
-  color: #64748b;
-  white-space: nowrap; // Empêcher le retour à la ligne du texte
-  text-align: center; // Centrer le texte
-}
-
-.metric__value {
-  font-size: clamp(1.8rem, 1rem + 1.5vw, 2.5rem);
-  font-weight: 700;
-  color: #0f172a;
 }
 
 .details__chart {
@@ -160,14 +117,6 @@
 
   .details__card {
     padding: 3rem 3.5rem;
-  }
-}
-
-@media (max-width: 720px) {
-  .stat-card {
-    width: 100%;
-    min-width: unset;
-    text-align: center;
   }
 }
 

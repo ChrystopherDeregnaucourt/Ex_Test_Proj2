@@ -1,3 +1,16 @@
+/* Styles partagés pour les titres des sections */
+.page-title {
+  margin: 0;
+  padding: 0.5rem 1.25rem;
+  font-size: clamp(1.5rem, 2.3vw, 2.25rem);
+  text-align: center;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #04838f;
+  border-radius: 0.75rem;
+  width: fit-content;
+}
+
 /* Styles partagés pour les cartes */
 .stat-card {
   min-width: 180px;

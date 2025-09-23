@@ -24,17 +24,6 @@
   gap: clamp(1.5rem, 2vw, 2.5rem);
 }
 
-.dashboard__title {
-  margin: 0;
-  padding: 0.5rem 1.25rem;
-  font-size: clamp(1.5rem, 2.3vw, 2.25rem);
-  text-align: center;
-  font-weight: 600;
-  color: white;
-  background-color: #04838f;
-  border-radius: 0.75rem;
-}
-
 .dashboard__subtitle {
   margin: 0.5rem 0 0;
   max-width: 30rem;
@@ -51,30 +40,6 @@
   flex-wrap: wrap;
   gap: 5rem;
   
-}
-
-.stat-card {
-  min-width: 180px;
-  padding: 1.25rem 1.75rem;
-  border-radius: 1.25rem;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  text-align: center;
-  border: 2px solid #04838f; /* bleu */
-}
-
-.stat-card__label {
-  font-size: 1.25rem;
-  letter-spacing: 0.12em;
-  color: #64748b;
-}
-
-.stat-card__value {
-  font-size: 2rem;
-  font-weight: 400;
-  color: #0f172a;
 }
 
 .dashboard__chart {
@@ -106,12 +71,6 @@
 }
 
 @media (max-width: 720px) {
-  .stat-card {
-    width: 100%;
-    min-width: unset;
-    text-align: center;
-  }
-
   .chart-card {
     width: 100%;
   }
