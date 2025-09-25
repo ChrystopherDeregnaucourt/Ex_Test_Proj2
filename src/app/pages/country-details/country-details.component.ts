@@ -58,7 +58,7 @@ export class CountryDetailsComponent implements OnInit
       legend: {
         display: true,
         position: 'bottom' as const,
-        labels:
+         labels:
         {
           boxWidth: 0, // On affiche pas les boîtes de couleur
           boxHeight: 0,
