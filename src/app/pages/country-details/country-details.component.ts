@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { OlympicService } from 'src/app/core/services/olympic.service';
-import { ChartConfiguration } from 'chart.js';
+import { ChartConfiguration, FontSpec, ScriptableContext } from 'chart.js';
 
 // Interface pour les métriques du pays
 interface CountryMetrics {
@@ -58,13 +58,23 @@ export class CountryDetailsComponent implements OnInit
       legend: {
         display: true,
         position: 'bottom' as const,
-        labels: 
+         labels:
         {
           boxWidth: 0, // On affiche pas les boîtes de couleur
           boxHeight: 0,
-          font: {
-            size: 16,
-            family: 'Montserrat, sans-serif'
+          font: (context: ScriptableContext<'line'>): FontSpec =>
+          {
+            const baseFont: FontSpec = {
+              size: 16,
+              family: 'Montserrat, sans-serif'
+            };
+
+            if (context.chart.width < 480)
+            {
+              return { ...baseFont, size: 12 };
+            }
+
+            return baseFont;
           },
           color: '#898f9bff'
         }
