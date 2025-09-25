@@ -7,8 +7,6 @@
 - [Running the Application](#running-the-application)
 - [Other Useful Scripts](#other-useful-scripts)
 - [Project Structure](#project-structure)
-- [Quality and Best Practices](#quality-and-best-practices)
-- [Going Further](#going-further)
 
 ## Overview
 Welcome to **OlympicGamesStarter**, an Angular application that provides a foundation for visualizing and analyzing Olympic Games results. This project acts as a starter kit for front-end workshops: the entire architecture is ready so you can focus on implementing features.
@@ -77,17 +75,6 @@ Getting started tips:
 - Review `app/core/services/olympic.service.ts` to see how data is loaded.
 - Create your TypeScript interfaces in `app/core/models/` and replace `any` types with strong typings.
 
-## Quality and Best Practices
-- Follow Angular naming conventions (PascalCase for components, camelCase for services, etc.).
-- Add unit tests for every new feature.
-- Keep this documentation up to date with notable changes (new scripts, dependencies, etc.).
-- Document major technical decisions in a `docs/` folder or the project wiki if needed.
-
-## Going Further
-- Integrate quality tools (ESLint, Prettier) to automate checks.
-- Describe upcoming features or roadmap items in a `Roadmap` section if the project continues to evolve.
-- Add screenshots or GIFs showcasing key features once they are implemented.
-
 Happy exploring and coding!
 
 ---
@@ -99,8 +86,6 @@ Happy exploring and coding!
 - [Lancement de l'application](#lancement-de-lapplication)
 - [Autres scripts utiles](#autres-scripts-utiles)
 - [Structure du projet](#structure-du-projet)
-- [Qualité et bonnes pratiques](#qualité-et-bonnes-pratiques)
-- [Aller plus loin](#aller-plus-loin)
 
 ## Présentation
 Bienvenue dans **OlympicGamesStarter**, une application Angular qui propose une base de travail pour visualiser et analyser les résultats des Jeux Olympiques. Ce projet sert de squelette pour les ateliers front-end : toute l'architecture est prête afin de vous concentrer sur l'implémentation des fonctionnalités.
@@ -169,15 +154,4 @@ Quelques conseils pour débuter :
 - Étudiez `app/core/services/olympic.service.ts` pour voir comment les données sont chargées.
 - Créez vos interfaces TypeScript dans `app/core/models/` et remplacez les `any` par des types forts.
 
-## Qualité et bonnes pratiques
-- Respectez les conventions de nommage Angular (PascalCase pour les composants, camelCase pour les services, etc.).
-- Ajoutez des tests unitaires pour chaque nouvelle fonctionnalité.
-- Mettez à jour cette documentation à chaque évolution notable (nouveaux scripts, nouvelles dépendances, etc.).
-- Pensez à documenter les décisions techniques importantes dans un `docs/` ou le wiki du projet si nécessaire.
 
-## Aller plus loin
-- Intégrez un outil de vérification (ESLint, Prettier) pour automatiser les contrôles qualité.
-- Décrivez votre roadmap ou vos fonctionnalités à venir dans une section `Roadmap` si le projet continue d'évoluer.
-- Ajoutez des captures d'écran ou GIF montrant les principales fonctionnalités une fois développées.
-
-Bonne exploration et bon développement !
