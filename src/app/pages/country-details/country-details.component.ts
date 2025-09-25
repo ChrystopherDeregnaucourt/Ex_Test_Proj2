@@ -42,10 +42,10 @@ export class CountryDetailsComponent implements OnInit
     chartData: this.emptyLineChartData
   });
 
-  public lineChartOptions: ChartConfiguration<'line'>['options'] = 
+  public lineChartOptions: ChartConfiguration<'line'>['options'] =
   {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     layout: {
       padding: {
         top: 20,
@@ -63,7 +63,7 @@ export class CountryDetailsComponent implements OnInit
           boxWidth: 0, // On affiche pas les boîtes de couleur
           boxHeight: 0,
           font: {
-            size: 30, 
+            size: 16,
             family: 'Montserrat, sans-serif'
           },
           color: '#898f9bff'
@@ -102,7 +102,7 @@ export class CountryDetailsComponent implements OnInit
           display: true, // Garder les années affichées
           color: '#000000ff',
           font: {
-            size: 14
+            size: 12
           }
         }
       },
@@ -119,7 +119,7 @@ export class CountryDetailsComponent implements OnInit
           display: true, // Supprimer l'affichage des nombres sur l'axe Y
           color: '#000000ff',
           font: {
-            size: 14
+            size: 12
           }
         }
       }
