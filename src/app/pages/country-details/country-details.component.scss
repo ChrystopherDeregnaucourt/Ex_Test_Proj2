@@ -41,14 +41,33 @@
   align-items: center;
   flex-wrap: wrap;
   width: 100%;
+
+  @media (max-width: 600px) {
+    gap: 1rem !important;
+
+    .stat-card {
+      width: min(100%, 260px);
+      padding: 0.85rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .stat-card__label {
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+    }
+
+    .stat-card__value {
+      font-size: 1.6rem;
+      font-weight: 500;
+    }
+  }
 }
 
 .details__chart {
   position: relative;
   width: 100%;
-  height: 400px;
   min-width: 200px;
-  min-height: 500px;
+  height: clamp(320px, 55vw, 460px);
 }
 
 .state-message {
